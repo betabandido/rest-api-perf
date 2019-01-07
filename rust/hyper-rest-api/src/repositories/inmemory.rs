@@ -1,9 +1,9 @@
 use std::collections::HashMap;
 
-use repositories::ValueRepository;
+use repositories::{Value, ValueRepository};
 
 pub struct InMemoryRepository {
-    dict: HashMap<String, String>,
+    dict: HashMap<String, Value>,
 }
 
 impl InMemoryRepository {
@@ -15,14 +15,14 @@ impl InMemoryRepository {
 }
 
 impl ValueRepository for InMemoryRepository {
-    fn get(&self, key: String) -> Result<String, &str> {
+    fn get(&self, key: String) -> Result<Value, &str> {
         match self.dict.get(&key) {
-            Some(value) => Ok(value.to_string()),
+            Some(value) => Ok(value.clone()),
             _ => Err("Not Found")
         }
     }
 
-    fn put(&mut self, key: String, value: String) {
-        self.dict.insert(key, value);
+    fn put(&mut self, value: Value) {
+        self.dict.insert(value.key.clone(), value.clone());
     }
 }

@@ -65,10 +65,13 @@ impl<Repo: ValueRepository> ValueService<Repo> {
             Some(capture) => {
                 let key = capture.get(1).unwrap().as_str().to_string();
                 match repo.get(key) {
-                    Ok(value) => Response::builder()
-                        .status(StatusCode::OK)
-                        .body(Body::from(value))
-                        .unwrap(),
+                    Ok(value) => {
+                        let content = serde_json::to_string(&value).unwrap();
+                        Response::builder()
+                            .status(StatusCode::OK)
+                            .body(Body::from(content))
+                            .unwrap()
+                    },
                     Err(_) => Response::builder()
                         .status(StatusCode::NOT_FOUND)
                         .body(Body::empty())
@@ -126,7 +129,7 @@ fn parse_body(body: Chunk) -> FutureResult<Value, hyper::Error> {
 }
 
 fn update_value<Repo: ValueRepository>(value: Value, repo: &mut Repo) -> FutureResult<i64, hyper::Error> {
-    repo.put(value.key, value.value);
+    repo.put(value);
     future::ok(0)
 }
 

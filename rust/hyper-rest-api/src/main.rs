@@ -13,7 +13,7 @@ mod service;
 
 use std::sync::{Arc, Mutex};
 
-use repositories::ValueRepository;
+use repositories::{Value, ValueRepository};
 use repositories::inmemory::InMemoryRepository;
 use service::ValueService;
 
@@ -24,8 +24,8 @@ fn main() {
 
     {
         let repo = &mut *entity_repository.lock().unwrap();
-        repo.put("foo".to_string(), "bar".to_string());
-        repo.put("abc".to_string(), "123".to_string());
+        repo.put(Value{key: "foo".to_string(), value: "bar".to_string()});
+        repo.put(Value{key: "abc".to_string(), value: "123".to_string()});
     }
 
     let service = ValueService{repo: entity_repository};
