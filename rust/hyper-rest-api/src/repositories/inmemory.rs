@@ -1,26 +1,20 @@
 use std::collections::HashMap;
 
-struct Value {
-    key: String,
-    value: String,
-}
-
-trait ValueRepository {
-    fn get(&self, key: String) -> Result<Value, &str>;
-    fn put(&self, value: Value);
-}
+use repositories::ValueRepository;
 
 pub struct InMemoryRepository {
     dict: HashMap<String, String>,
 }
 
 impl InMemoryRepository {
-    fn new() -> InMemoryRepository {
+    pub fn new() -> InMemoryRepository {
         InMemoryRepository {
             dict: HashMap::new(),
         }
     }
+}
 
+impl ValueRepository for InMemoryRepository {
     fn get(&self, key: String) -> Result<String, &str> {
         match self.dict.get(&key) {
             Some(value) => Ok(value.to_string()),
