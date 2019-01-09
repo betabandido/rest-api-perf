@@ -2,13 +2,14 @@ use std::collections::HashMap;
 
 use repositories::{Value, ValueRepository};
 
+#[derive(Debug)]
 pub struct InMemoryRepository {
     dict: HashMap<String, Value>,
 }
 
 impl InMemoryRepository {
-    pub fn new() -> InMemoryRepository {
-        InMemoryRepository {
+    pub fn new() -> Self {
+        Self {
             dict: HashMap::new(),
         }
     }

@@ -1,10 +1,12 @@
+use std::sync::Arc;
+
 use futures::{future, Future, Stream};
 use futures::future::FutureResult;
 use hyper::{Body, Chunk, Method, Request, Response, StatusCode};
 use hyper::service::{NewService, Service};
 use hyper::server::Server;
+use parking_lot::RwLock;
 use regex::Regex;
-use std::sync::{Arc, Mutex};
 
 use repositories::{Value, ValueRepository};
 
@@ -12,15 +14,15 @@ lazy_static! {
     static ref GET_VALUE_REGEX: Regex = Regex::new(r"^/api/values/(.*)$").unwrap();
 }
 
-pub struct ValueService<Repo: ValueRepository> {
-    pub repo: Arc<Mutex<Repo>>
+pub struct ValueService {
+    pub repo: Arc<RwLock<Box<dyn ValueRepository>>>,
 }
 
-impl<Repo: ValueRepository> NewService for ValueService<Repo> {
+impl NewService for ValueService {
     type ReqBody = Body;
     type ResBody = Body;
     type Error = hyper::Error;
-    type Service = ValueService<Repo>;
+    type Service = ValueService;
     type Future = Box<Future<Item=Self::Service, Error=Self::InitError> + Send>;
     type InitError = hyper::Error;
 
@@ -31,7 +33,7 @@ impl<Repo: ValueRepository> NewService for ValueService<Repo> {
     }
 }
 
-impl<Repo: ValueRepository> Service for ValueService<Repo> {
+impl Service for ValueService {
     type ReqBody = Body;
     type ResBody = Body;
     type Error = hyper::Error;
@@ -46,7 +48,7 @@ impl<Repo: ValueRepository> Service for ValueService<Repo> {
     }
 }
 
-impl<Repo: ValueRepository> ValueService<Repo> {
+impl ValueService {
     pub fn start(self, port: u16) {
         let addr = format!("0.0.0.0:{}", port).parse().unwrap();
         let server = Server::bind(&addr)
@@ -57,13 +59,12 @@ impl<Repo: ValueRepository> ValueService<Repo> {
         hyper::rt::run(server);
     }
 
-    fn handle_get_request(&self, request: Request<<ValueService<Repo> as Service>::ReqBody>)
-                          -> <ValueService<Repo> as Service>::Future {
-        let repo = self.repo.lock().unwrap();
-
+    fn handle_get_request(&self, request: Request<<ValueService as Service>::ReqBody>)
+                          -> <ValueService as Service>::Future {
         let resp = match GET_VALUE_REGEX.captures(request.uri().path()) {
             Some(capture) => {
                 let key = capture.get(1).unwrap().as_str().to_string();
+                let repo = &self.repo.read();
                 match repo.get(key) {
                     Ok(value) => {
                         let content = serde_json::to_string(&value).unwrap();
@@ -71,7 +72,7 @@ impl<Repo: ValueRepository> ValueService<Repo> {
                             .status(StatusCode::OK)
                             .body(Body::from(content))
                             .unwrap()
-                    },
+                    }
                     Err(_) => Response::builder()
                         .status(StatusCode::NOT_FOUND)
                         .body(Body::empty())
@@ -87,21 +88,22 @@ impl<Repo: ValueRepository> ValueService<Repo> {
         Box::new(future::ok(resp))
     }
 
-    fn handle_put_request(&mut self, request: Request<<ValueService<Repo> as Service>::ReqBody>)
-                          -> <ValueService<Repo> as Service>::Future {
+    fn handle_put_request(&mut self, request: Request<<ValueService as Service>::ReqBody>)
+                          -> <ValueService as Service>::Future {
         if request.uri().path() == "/api/values" {
             let repo = self.repo.clone();
 
             let resp = request
                 .into_body()
                 .concat2()
-                .and_then(parse_body)
+                .and_then(Self::parse_body)
                 .and_then(move |value| {
                     let repo = repo.clone();
-                    let repo = &mut *repo.lock().unwrap();
-                    update_value(value, repo)
+                    let repo = &mut repo.write();
+                    let repo = &mut **repo;
+                    Self::update_value(value, repo)
                 })
-                .then(make_put_response::<Repo>);
+                .then(Self::make_put_response);
 
             Box::new(resp)
         } else {
@@ -113,7 +115,7 @@ impl<Repo: ValueRepository> ValueService<Repo> {
         }
     }
 
-    fn bad_request_error_response(&self) -> <ValueService<Repo> as Service>::Future {
+    fn bad_request_error_response(&self) -> <ValueService as Service>::Future {
         Box::new(future::ok(
             Response::builder()
                 .status(StatusCode::BAD_REQUEST)
@@ -121,25 +123,27 @@ impl<Repo: ValueRepository> ValueService<Repo> {
                 .unwrap()
         ))
     }
+
+    fn parse_body(body: Chunk) -> FutureResult<Value, hyper::Error> {
+        let value: Value = serde_json::from_slice(&body).unwrap();
+        future::ok(value)
+    }
+
+    fn update_value(value: Value, repo: &mut Box<dyn ValueRepository>)
+                    -> FutureResult<i64, hyper::Error> {
+        repo.put(value);
+        future::ok(0)
+    }
+
+    fn make_put_response(_result: Result<i64, hyper::Error>)
+                         -> FutureResult<
+                             Response<<ValueService as Service>::ResBody>,
+                             hyper::Error
+                         > {
+        future::ok(Response::builder()
+            .status(StatusCode::OK)
+            .body(Body::empty())
+            .unwrap())
+    }
 }
 
-fn parse_body(body: Chunk) -> FutureResult<Value, hyper::Error> {
-    let value: Value = serde_json::from_slice(&body).unwrap();
-    future::ok(value)
-}
-
-fn update_value<Repo: ValueRepository>(value: Value, repo: &mut Repo) -> FutureResult<i64, hyper::Error> {
-    repo.put(value);
-    future::ok(0)
-}
-
-fn make_put_response<Repo: ValueRepository>(_result: Result<i64, hyper::Error>)
-                     -> FutureResult<
-                         Response<<ValueService<Repo> as Service>::ResBody>,
-                         hyper::Error
-                     > {
-    future::ok(Response::builder()
-        .status(StatusCode::OK)
-        .body(Body::empty())
-        .unwrap())
-}
