@@ -2,8 +2,8 @@ package handlers
 
 import (
 	"encoding/json"
-	"github.com/betabandido/chi-rest-api/domain"
-	"github.com/betabandido/chi-rest-api/repositories"
+	"github.com/betabandido/rest-api-perf/go/common/domain"
+	"github.com/betabandido/rest-api-perf/go/common/repositories"
 	"github.com/go-chi/chi"
 	"net/http"
 )

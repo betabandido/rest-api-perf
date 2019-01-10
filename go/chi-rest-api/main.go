@@ -1,15 +1,15 @@
 package main
 
 import (
-	"github.com/betabandido/chi-rest-api/handlers"
-	"github.com/betabandido/chi-rest-api/repositories"
+	"github.com/betabandido/rest-api-perf/go/chi-rest-api/handlers"
+	"github.com/betabandido/rest-api-perf/go/common/repositories"
 	"github.com/go-chi/chi"
 	"net/http"
 )
 
 func main() {
 	valuesHandler := handlers.MakeValuesHandler(
-		repositories.MakeInMemoryValueRepository(),
+		repositories.MakeValueRepository(),
 	)
 
 	r := chi.NewRouter()

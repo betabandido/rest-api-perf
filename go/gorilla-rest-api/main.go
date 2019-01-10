@@ -1,15 +1,15 @@
 package main
 
 import (
-	"github.com/betabandido/gorilla-rest-api/handlers"
-	"github.com/betabandido/gorilla-rest-api/repositories"
+	"github.com/betabandido/rest-api-perf/go/common/repositories"
+	"github.com/betabandido/rest-api-perf/go/gorilla-rest-api/handlers"
 	"github.com/gorilla/mux"
 	"net/http"
 )
 
 func main() {
 	valuesHandler := handlers.MakeValuesHandler(
-		repositories.MakeInMemoryValueRepository(),
+		repositories.MakeValueRepository(),
 	)
 
 	r := mux.NewRouter()

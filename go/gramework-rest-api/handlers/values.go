@@ -1,8 +1,8 @@
 package handlers
 
 import (
-	"github.com/betabandido/gramework-rest-api/domain"
-	"github.com/betabandido/gramework-rest-api/repositories"
+	"github.com/betabandido/rest-api-perf/go/common/domain"
+	"github.com/betabandido/rest-api-perf/go/common/repositories"
 	"github.com/gramework/gramework"
 	"net/http"
 )
