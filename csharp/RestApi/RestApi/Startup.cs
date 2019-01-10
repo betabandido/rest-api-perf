@@ -16,7 +16,7 @@ namespace RestApi
                 .AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             
-            services.AddSingleton<IValueRepository, InMemoryValueRepository>();
+            services.AddSingleton<IValueRepository>(ValueRepositoryFactory.Create());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
