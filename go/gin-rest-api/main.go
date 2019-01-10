@@ -1,14 +1,14 @@
 package main
 
 import (
-	"github.com/betabandido/gin-rest-api/handlers"
-	"github.com/betabandido/gin-rest-api/repositories"
+	"github.com/betabandido/rest-api-perf/go/common/repositories"
+	"github.com/betabandido/rest-api-perf/go/gin-rest-api/handlers"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
 	valuesHandler := handlers.MakeValuesHandler(
-		repositories.MakeInMemoryValueRepository(),
+		repositories.MakeValueRepository(),
 	)
 
 	r := gin.New()

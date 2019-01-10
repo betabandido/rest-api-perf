@@ -1,8 +1,8 @@
 package handlers
 
 import (
-	"github.com/betabandido/gin-rest-api/domain"
-	"github.com/betabandido/gin-rest-api/repositories"
+	"github.com/betabandido/rest-api-perf/go/common/domain"
+	"github.com/betabandido/rest-api-perf/go/common/repositories"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )

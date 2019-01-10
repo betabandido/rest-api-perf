@@ -3,15 +3,15 @@ package main
 import (
 	"github.com/apex/log"
 	"github.com/apex/log/handlers/cli"
-	"github.com/betabandido/gramework-rest-api/handlers"
-	"github.com/betabandido/gramework-rest-api/repositories"
+	"github.com/betabandido/rest-api-perf/go/common/repositories"
+	"github.com/betabandido/rest-api-perf/go/gramework-rest-api/handlers"
 	"github.com/gramework/gramework"
 	"os"
 )
 
 func main() {
 	valuesHandler := handlers.MakeValuesHandler(
-		repositories.MakeInMemoryValueRepository(),
+		repositories.MakeValueRepository(),
 	)
 
 	app := gramework.New()
