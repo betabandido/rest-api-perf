@@ -8,7 +8,7 @@ use hyper::server::Server;
 use parking_lot::RwLock;
 use regex::Regex;
 
-use repositories::{Value, ValueRepository};
+use rest_api_common::{Value, ValueRepository};
 
 lazy_static! {
     static ref GET_VALUE_REGEX: Regex = Regex::new(r"^/api/values/(.*)$").unwrap();

@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use repositories::{Value, ValueRepository};
+use crate::{Value, ValueRepository};
 
 #[derive(Debug)]
 pub struct InMemoryRepository {

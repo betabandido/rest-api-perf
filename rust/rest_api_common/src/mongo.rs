@@ -1,7 +1,7 @@
 use mongodb::{Bson, from_bson, to_bson};
 use mongodb::coll::Collection;
 
-use repositories::{Value, ValueRepository};
+use crate::{Value, ValueRepository};
 
 #[derive(Debug)]
 pub struct MongoRepository {

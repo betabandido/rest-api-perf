@@ -485,3 +485,6 @@ Cargo.lock
 **/*.rs.bk
 
 # End of https://www.gitignore.io/api/go,rust,rider,csharp,intellij+iml
+
+.rustc_info.json
+
