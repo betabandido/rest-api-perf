@@ -1,0 +1,10 @@
+[package]
+name = "actix-rest-api"
+version = "0.1.0"
+authors = ["Victor Jimenez <betabandido@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+actix-web = "0.7"
+parking_lot = "0.7"
+rest_api_common = { path = "../rest_api_common" }
