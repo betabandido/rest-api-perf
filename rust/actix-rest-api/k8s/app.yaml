@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: actix-rest-api
+spec:
+  selector:
+    matchLabels:
+      app: actix-rest-api
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: actix-rest-api
+    spec:
+      containers:
+      - name: actix-rest-api
+        image: gcr.io/product-catalog-237219/actix-rest-api
+        ports:
+        - containerPort: 8000
+        env:
+        - name: REST_API_PERF_REPO
+          value: in-memory
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: actix-rest-api
+spec:
+  selector:
+    app: actix-rest-api
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8000
+  type: LoadBalancer

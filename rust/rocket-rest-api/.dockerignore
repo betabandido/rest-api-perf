@@ -1,0 +1,5 @@
+target
+.idea
+k8s
+skaffold.yaml
+README.md

@@ -1,0 +1,8 @@
+FROM rust:1.35-slim AS builder
+WORKDIR /usr/src/app
+COPY . .
+RUN cargo install --path .
+
+FROM debian:stable-slim
+COPY --from=builder /usr/local/cargo/bin/hyper-rest-api /
+CMD ["/hyper-rest-api"]
