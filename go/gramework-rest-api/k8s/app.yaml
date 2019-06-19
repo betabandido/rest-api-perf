@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gramework-rest-api
+spec:
+  selector:
+    matchLabels:
+      app: gramework-rest-api
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: gramework-rest-api
+    spec:
+      containers:
+      - name: gramework-rest-api
+        image: gcr.io/product-catalog-237219/gramework-rest-api
+        ports:
+        - containerPort: 8000
+        env:
+        - name: REST_API_PERF_REPO
+          value: in-memory
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gramework-rest-api
+spec:
+  selector:
+    app: gramework-rest-api
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8000
+  type: LoadBalancer
