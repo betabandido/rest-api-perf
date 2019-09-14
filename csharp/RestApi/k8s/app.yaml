@@ -1,23 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: rocket-rest-api
+  name: csharp-rest-api
 spec:
   selector:
     matchLabels:
-      app: rocket-rest-api
+      app: csharp-rest-api
   replicas: 1
   template:
     metadata:
       labels:
-        app: rocket-rest-api
+        app: csharp-rest-api
     spec:
       containers:
-      - name: rocket-rest-api
-        image: gcr.io/product-catalog-237219/rocket-rest-api
+      - name: csharp-rest-api
+        image: gcr.io/product-catalog-237219/csharp-rest-api
         imagePullPolicy: Always
         ports:
-        - containerPort: 8000
+        - containerPort: 80
         env:
         - name: REST_API_PERF_REPO
           value: in-memory
@@ -32,12 +32,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: rocket-rest-api
+  name: csharp-rest-api
 spec:
   selector:
-    app: rocket-rest-api
+    app: csharp-rest-api
   ports:
   - protocol: TCP
     port: 80
-    targetPort: 8000
+    targetPort: 80
   type: LoadBalancer

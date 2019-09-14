@@ -1,4 +1,4 @@
-FROM rust:1.35-slim AS builder
+FROM rust:1.37-slim AS builder
 RUN rustup update nightly
 RUN rustup default nightly
 WORKDIR /usr/src/app

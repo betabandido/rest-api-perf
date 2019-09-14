@@ -15,6 +15,7 @@ spec:
       containers:
       - name: gin-rest-api
         image: gcr.io/product-catalog-237219/gin-rest-api
+        imagePullPolicy: Always
         ports:
         - containerPort: 8000
         env:
@@ -22,6 +23,13 @@ spec:
           value: in-memory
         - name: GIN_MODE
           value: release
+        resources:
+          limits:
+            cpu: 4
+            memory: 4Gi
+          requests:
+            cpu: 500m
+            memory: 1Gi
 ---
 apiVersion: v1
 kind: Service
