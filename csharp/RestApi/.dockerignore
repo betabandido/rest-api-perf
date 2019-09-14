@@ -1,0 +1,11 @@
+.dockerignore
+.idea
+.vs
+.vscode
+Dockerfile
+README.md
+k8s
+skaffold.yaml
+**/bin
+**/obj
+**/publish
