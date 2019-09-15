@@ -5,21 +5,22 @@ library(ggplot2)
 
 args = commandArgs(trailingOnly = TRUE)
 
-if (length(args) != 1) {
-  stop('USAGE: make-plot.R <implementation>')
+if (length(args) != 2) {
+  stop('USAGE: make-plot.R <implementation> <keepalive>')
 }
 
 implementation <- args[1]
+keepalive <- args[2]
 
-dt <- fread(sprintf('results-%s.csv', implementation))
+dt <- fread(sprintf('results-%s-keepalive:%s.csv', implementation, keepalive))
 
 pl <- ggplot(dt, aes(`requested-qps`, `actual-qps`)) +
   geom_line() +
   geom_point() +
   xlab('Requested QPS') +
   ylab('Actual QPS') +
-  ylim(0, 32000)
-ggsave(sprintf('qps-%s.png', implementation), 
+  ylim(0, max(dt[, `requested-qps`]))
+ggsave(sprintf('qps-%s-keepalive:%s.png', implementation, keepalive), 
        pl, width = 5, height = 4, units = "in")
 
 dt[, c('actual-qps', 'total-count', 'success-count') := NULL]
@@ -34,5 +35,5 @@ pl <- ggplot(dt, aes(`requested-qps`, latency, color = metric)) +
   xlab('Requested QPS') +
   ylab('Latency (ms)') +
   ylim(0, NA)
-ggsave(sprintf('latency-%s.png', implementation),
+ggsave(sprintf('latency-%s-keepalive:%s.png', implementation, keepalive),
        pl, width = 5, height = 4, units = "in")
