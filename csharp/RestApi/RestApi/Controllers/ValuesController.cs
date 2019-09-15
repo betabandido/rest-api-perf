@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using RestApi.Domain;
 using RestApi.Repositories;
@@ -17,11 +18,11 @@ namespace RestApi.Controllers
         }
         
         [HttpGet("{key}")]
-        public ActionResult<string> Get(string key)
+        public async Task<ActionResult<string>> Get(string key)
         {
             try
             {
-                return Ok(_valueRepository.Get(key));
+                return Ok(await _valueRepository.GetAsync(key));
             }
             catch (KeyNotFoundException)
             {
@@ -30,9 +31,9 @@ namespace RestApi.Controllers
         }
 
         [HttpPut]
-        public IActionResult Put([FromBody] KeyValue value)
+        public async Task<IActionResult> Put([FromBody] KeyValue value)
         {
-            _valueRepository.Put(value);
+            await _valueRepository.PutAsync(value);
             return Ok();
         }
     }

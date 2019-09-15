@@ -1,4 +1,4 @@
-using System.Linq;
+using System.Threading.Tasks;
 using MongoDB.Driver;
 using RestApi.Domain;
 
@@ -10,23 +10,21 @@ namespace RestApi.Repositories
 
         public MongoValueRepository(IMongoClient client)
         {
-            _collection = client.GetDatabase("test").GetCollection<KeyValue>("values");
+            _collection = client
+                .GetDatabase("test")
+                .GetCollection<KeyValue>("values");
         }
         
-        public KeyValue Get(string key)
+        public async Task<KeyValue> GetAsync(string key)
         {
-            var results = _collection
-                .Find(x => x.Key == key)
-                .ToList();
+            var cursor = await _collection.FindAsync(x => x.Key == key);
 
-            return results.Count == 0
-                ? null
-                : results.First();
+            return await cursor.FirstOrDefaultAsync();
         }
 
-        public void Put(KeyValue value)
+        public async Task PutAsync(KeyValue value)
         {
-            _collection.InsertOne(value);
+            await _collection.InsertOneAsync(value);
         }
     }
 }

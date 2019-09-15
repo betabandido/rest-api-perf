@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using RestApi.Domain;
 
 namespace RestApi.Repositories
@@ -7,14 +8,16 @@ namespace RestApi.Repositories
     {
         private readonly Dictionary<string, KeyValue> _values = new Dictionary<string, KeyValue>();
         
-        public KeyValue Get(string key)
+        public Task<KeyValue> GetAsync(string key)
         {
-            return _values[key];
+            return Task.FromResult(_values[key]);
         }
 
-        public void Put(KeyValue value)
+        public Task PutAsync(KeyValue value)
         {
             _values[value.Key] = value;
+            
+            return Task.CompletedTask;
         }
     }
 }
