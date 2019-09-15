@@ -1,5 +1,5 @@
 [package]
-name = "hyper-rest-api"
+name = "hyper_rest_api"
 version = "0.1.0"
 authors = ["Victor Jimenez <betabandido@gmail.com>"]
 

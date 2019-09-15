@@ -1,5 +1,5 @@
 [package]
-name = "rocket-rest-api"
+name = "rocket_rest_api"
 version = "0.1.0"
 authors = ["Victor Jimenez <betabandido@gmail.com>"]
 edition = "2018"
