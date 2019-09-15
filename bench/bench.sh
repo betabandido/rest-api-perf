@@ -19,13 +19,28 @@ curl -X PUT \
 RESULTS_PATH="$(pwd)/results"
 mkdir -p "$RESULTS_PATH"
 
-RESULTS_FILE="$RESULTS_PATH/results-$IMPLEMENTATION.csv"
+function run_bench {
+  QPS_LIST=$1
+  KEEP_ALIVE=$2
 
-python3 process-results.py --print-headers > "$RESULTS_FILE"
+  RESULTS_FILE="$RESULTS_PATH/results-$IMPLEMENTATION-keepalive:$KEEP_ALIVE.csv"
 
-for qps in 100 200 400 800 1600 2400 3200 4800 6400 9600 12800 16000 19200 22400 25600 32000
-do
-    fortio load -qps $qps -c 50 -t 60s -json "$RESULTS_PATH/result.json" "http://$HOST/api/values/foo"
-    python3 process-results.py --file "$RESULTS_PATH/result.json" --qps $qps >> "$RESULTS_FILE"
-    rm -f "$RESULTS_PATH/result.json"
-done
+  python3 process-results.py --print-headers > "$RESULTS_FILE"
+
+  for qps in $QPS_LIST
+  do
+      fortio load \
+        -qps $qps \
+        -c 50 \
+        -t 30s \
+        -keepalive=$KEEP_ALIVE \
+        -json "$RESULTS_PATH/result.json" \
+        "http://$HOST/api/values/foo"
+
+      python3 process-results.py --file "$RESULTS_PATH/result.json" --qps $qps >> "$RESULTS_FILE"
+      rm -f "$RESULTS_PATH/result.json"
+  done
+}
+
+run_bench "1000 2000 4000 8000 16000 24000 32000 48000 56000 64000" true
+run_bench "1000 2000 4000 8000 12000 16000" false
