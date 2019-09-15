@@ -4,8 +4,8 @@ set -eu
 
 if [[ $# -ne 2 ]]
 then
-    echo "USAGE: bench.sh <host> <implementation>"
-    exit 1
+  echo "USAGE: bench.sh <host> <implementation>"
+  exit 1
 fi
 
 HOST="$1"
@@ -29,16 +29,16 @@ function run_bench {
 
   for qps in $QPS_LIST
   do
-      fortio load \
-        -qps $qps \
-        -c 50 \
-        -t 30s \
-        -keepalive=$KEEP_ALIVE \
-        -json "$RESULTS_PATH/result.json" \
-        "http://$HOST/api/values/foo"
+    fortio load \
+      -qps $qps \
+      -c 50 \
+      -t 30s \
+      -keepalive=$KEEP_ALIVE \
+      -json "$RESULTS_PATH/result.json" \
+      "http://$HOST/api/values/foo"
 
-      python3 process-results.py --file "$RESULTS_PATH/result.json" --qps $qps >> "$RESULTS_FILE"
-      rm -f "$RESULTS_PATH/result.json"
+    python3 process-results.py --file "$RESULTS_PATH/result.json" --qps $qps >> "$RESULTS_FILE"
+    rm -f "$RESULTS_PATH/result.json"
   done
 }
 
