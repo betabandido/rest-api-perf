@@ -4,7 +4,7 @@ version = "0.1.0"
 authors = ["Victor Jimenez <betabandido@gmail.com>"]
 
 [dependencies]
-hyper = "0.12"
+hyper = "0.14"
 futures = "0.1"
 lazy_static = "1.3"
 parking_lot = "0.8"
